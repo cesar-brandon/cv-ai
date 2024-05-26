@@ -12,14 +12,13 @@ export function Profile({
   resume: Resume | null;
 }) {
   const router = useRouter();
-
-  if (!resume) {
+  if (!resume?.content) {
     router.push("/cv-options");
   }
   return (
     <div className="w-[20rem] lg:w-[36rem] flex flex-col gap-4">
       <ProfileHeader name={user.name} />
-      {resume ? (
+      {resume?.content ? (
         <div className="w-full h-[13rem] rounded-[3rem] bg-muted p-6 flex gap-4 overflow-hidden">
           <p>{JSON.stringify(resume.content)}</p>
         </div>

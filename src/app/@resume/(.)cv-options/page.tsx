@@ -1,15 +1,12 @@
 "use client";
 import { useState } from "react";
-import CloseModal from "@/components/close-modal";
-import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 export default function Page() {
   const router = useRouter();
@@ -18,7 +15,7 @@ export default function Page() {
   >("cv-create");
 
   return (
-    <div className="fixed inset-0 bg-zinc-900/20 z-10">
+    <div className="fixed inset-0 bg-foreground/20 z-10">
       <div className="container flex items-center h-full max-w-lg mx-auto">
         <Card className="h-fit w-full">
           <CardContent className="flex flex-col gap-4 p-4">

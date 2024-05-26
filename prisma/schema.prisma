@@ -22,8 +22,11 @@ model User {
 }
 
 model Resume {
-  id      String @id @default(cuid())
-  user    User   @relation(fields: [userId], references: [id])
-  userId  String
-  content Json
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  url       String
+  userId    String
+  content   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
