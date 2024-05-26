@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ModalFooter } from "@/components/modal-footer";
 import { useMutation } from "@tanstack/react-query";
 import { SectionSkeleton } from "@/components/section-skeleton";
-import { sectionCv } from "@/actions/section-cv";
+import axios from "axios";
 
 export default function Page() {
   const {
@@ -14,7 +14,14 @@ export default function Page() {
     isPending,
     mutate: server_sectionCv,
   } = useMutation({
-    mutationFn: sectionCv,
+    mutationFn: async (file: any) => {
+      const res = await axios.post("/api/pdf", file, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    },
     onSuccess: () => {
       console.log(data);
     },
