@@ -4,20 +4,22 @@ import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { db } from "@/lib/prisma";
 import PdfParse from "pdf-parse";
+import axios from "axios";
 
-export async function sectionCv(file: any) {
+export async function sectionCv(key: string) {
   "use server";
 
   try {
+    const response = await axios.get(`https://utfs.io/f/${key}`, { responseType: 'arraybuffer' });
+    const data = await PdfParse(response.data);
+
     const user = await db.user.findFirst();
     if (!user) throw new Response("User not found", { status: 404 });
-
-    const pdfData = await PdfParse(file);
 
     const { object: content } = await generateObject({
       model: google("models/gemini-1.5-pro-latest"),
       system: "divide and section resume",
-      prompt: pdfData.text,
+      prompt: data.text,
       schema: z.object({
         object: z.object({
           about: z.string(),

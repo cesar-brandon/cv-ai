@@ -58,7 +58,7 @@ export function UploadDropzone({ sectionCv }: { sectionCv: any }) {
         setUploadProgress(100);
         setIsUploading(false);
 
-        await sectionCv(acceptedFile);
+        sectionCv(key);
       }}
     >
       {({ getRootProps, getInputProps, acceptedFiles }) => (
