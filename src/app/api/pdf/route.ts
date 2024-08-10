@@ -2,13 +2,36 @@ import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { db } from "@/lib/prisma";
-import PdfParse from "pdf-parse";
-import { Readable } from "stream";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs/promises";
-import PDFParser from "pdf2json"; // To parse the pdf
+import PDFParser from "pdf2json";
 
-export async function POST(req: Request, res: Response) {
+const resumeSchema = z.object({
+  about: z.string(),
+  experience: z.array(
+    z.object({
+      title: z.string(),
+      company: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+      description: z.string(),
+    }),
+  ),
+  skills: z.array(z.string()),
+  projects: z.array(
+    z.object({
+      title: z.string(),
+      description: z.string(),
+      startDate: z.string(),
+      endDate: z.string(),
+      url: z.string(),
+    }),
+  ),
+});
+
+export type Resume = z.infer<typeof resumeSchema>;
+
+export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     console.log(formData);
@@ -27,7 +50,7 @@ export async function POST(req: Request, res: Response) {
       const pdfParser = new (PDFParser as any)(null, 1);
 
       pdfParser.on("pdfParser_dataError", (errData: any) =>
-        console.log(errData.parserError)
+        console.log(errData.parserError),
       );
 
       pdfParser.on("pdfParser_dataReady", () => {
@@ -45,39 +68,19 @@ export async function POST(req: Request, res: Response) {
 
     const { object: content } = await generateObject({
       model: google("models/gemini-1.5-pro-latest"),
-      system: "reads the resume they enter, divides it and section the resume",
+      system: `analiza la informacion del curriculum vitae en texto plano y devuelve un objeto con la informacion correcta en el formato correcto.`,
       prompt: parsedText,
-      schema: z.object({
-        object: z.object({
-          about: z.string(),
-          experience: z.object({
-            title: z.string(),
-            description: z.string(),
-          }),
-          skills: z.string(),
-          projects: z.object({
-            title: z.string(),
-            description: z.string(),
-          }),
-        }),
-      }),
+      schema: resumeSchema,
     });
 
-    let resume = await db.resume.findFirst({
-      where: { id: user.id },
-    });
+    console.log(JSON.stringify(content));
 
-    if (resume) {
-      await db.resume.update({
-        where: { id: user.id },
-        data: { content },
-      });
-    }
-    resume = await db.resume.findFirst({
-      where: { id: user.id },
-    });
+    // await db.resume.update({
+    //   where: { id: user.id },
+    //   data: { content },
+    // });
 
-    return new Response(JSON.stringify(resume?.content), { status: 200 });
+    return new Response(JSON.stringify(content), { status: 200 });
   } catch (error) {
     console.log(error);
     return new Response("Error", { status: 500 });

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export function ModalFooter() {
   const router = useRouter();
   return (
-    <CardFooter className="flex gap-4 px-4">
+    <CardFooter className="flex gap-4">
       <Button
         className="w-full"
         variant="secondary"

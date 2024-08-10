@@ -1,4 +1,5 @@
 import { Profile } from "@/components/profile";
+import { ProfileResume } from "@/components/profile/profile-resume";
 import { db } from "@/lib/prisma";
 
 export default async function Home() {

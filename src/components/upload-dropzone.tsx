@@ -57,7 +57,7 @@ export function UploadDropzone({ sectionCv }: { sectionCv: any }) {
         clearInterval(progressInterval);
         setUploadProgress(100);
         setIsUploading(false);
-        
+
         sectionCv(acceptedFile);
       }}
     >
@@ -67,16 +67,13 @@ export function UploadDropzone({ sectionCv }: { sectionCv: any }) {
           className="w-full bg-background border border-dashed hover:border-solid border-primary rounded-[2rem] 
           flex items-center justify-center p-6 transition-all duration-300 cursor-pointer"
         >
-          <label
-            htmlFor="dropzone-file"
-            className="flex flex-col items-center gap-4 justify-center w-full text-center cursor-pointer"
-          >
+          <div className="flex flex-col items-center gap-4 justify-center w-full text-center cursor-pointer">
             <div className="flex flex-col items-center gap-2">
               <Paperclip className="w-6 h-6 text-primary" />
               <p className="flex flex-col gap-1 text-sm font-semibold text-muted-foreground">
                 Carga tu currículum aquí
                 <span className="text-xs font-normal text-muted-foreground">
-                  PDF (máx. 4MB)
+                  PDF (máx. 2MB)
                 </span>
               </p>
             </div>
@@ -96,14 +93,7 @@ export function UploadDropzone({ sectionCv }: { sectionCv: any }) {
                 <Progress value={uploadProgress} className="h-2 w-full" />
               </div>
             ) : null}
-
-            <input
-              {...getInputProps()}
-              type="file"
-              id="dropzone-file"
-              className="hidden"
-            />
-          </label>
+          </div>
         </div>
       )}
     </Dropzone>
