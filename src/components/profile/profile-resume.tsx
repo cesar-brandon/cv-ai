@@ -2,9 +2,10 @@ import { Resume } from "@/app/api/pdf/route";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SectionSkeleton } from "../section-skeleton";
 import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Award, Box, BriefcaseBusiness, Info } from "lucide-react";
 
 export function ProfileResume({
   resume,
@@ -15,15 +16,41 @@ export function ProfileResume({
   isPending?: boolean;
   className?: string;
 }) {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+
   return (
-    <Tabs defaultValue="about" className={cn("w-[400px] h-[25rem]", className)}>
-      <TabsList>
-        <TabsTrigger value="about">Acerca de</TabsTrigger>
-        <TabsTrigger value="skills">Habilidades</TabsTrigger>
-        <TabsTrigger value="exp">Experiencia</TabsTrigger>
-        <TabsTrigger value="projects">Proyectos</TabsTrigger>
+    <Tabs defaultValue="about">
+      <TabsList className={cn("flex sm:gap-4", className)}>
+        <TabsTrigger
+          value="about"
+          className="data-[state=active]:w-full sm:data-[state=active]:w-auto transition-all duration-300"
+        >
+          {isDesktop ? "Acerca de mí" : <Info className="w-5 h-5" />}
+        </TabsTrigger>
+        <TabsTrigger
+          value="skills"
+          className="data-[state=active]:w-full sm:data-[state=active]:w-auto transition-all duration-300"
+        >
+          {isDesktop ? "Habilidades" : <Award className="w-5 h-5" />}
+        </TabsTrigger>
+        <TabsTrigger
+          value="exp"
+          className="data-[state=active]:w-full sm:data-[state=active]:w-auto transition-all duration-300"
+        >
+          {isDesktop ? (
+            "Experiencia"
+          ) : (
+            <BriefcaseBusiness className="w-5 h-5" />
+          )}
+        </TabsTrigger>
+        <TabsTrigger
+          value="projects"
+          className="data-[state=active]:w-full sm:data-[state=active]:w-auto transition-all duration-300"
+        >
+          {isDesktop ? "Proyectos" : <Box className="w-5 h-5" />}
+        </TabsTrigger>
       </TabsList>
-      <TabsContent value="about">
+      <TabsContent value="about" className="pt-2">
         {isPending ? (
           <SectionSkeleton />
         ) : (
@@ -32,7 +59,7 @@ export function ProfileResume({
           </p>
         )}
       </TabsContent>
-      <TabsContent value="skills">
+      <TabsContent value="skills" className="pt-2">
         {isPending ? (
           <SectionSkeleton />
         ) : (
@@ -45,34 +72,29 @@ export function ProfileResume({
           </ul>
         )}
       </TabsContent>
-      <TabsContent value="exp">
+      <TabsContent value="exp" className="pt-2">
         {isPending ? (
           <SectionSkeleton />
         ) : (
           <ScrollArea className="h-[300px] w-full rounded-md border">
             {resume?.experience.map((exp, index) => (
-              <div className="p-4" key={index}>
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-semibold text-lg truncate">
-                    {exp.title}
-                  </h3>
-                  <p className="font-light text-muted-foreground">
-                    {exp.company}
-                  </p>
-                  <p className="font-light text-muted-foreground">
-                    {exp.description}
-                  </p>
-                  <p className="font-light text-muted-foreground">
-                    {exp.startDate} - {exp.endDate}
-                  </p>
-                </div>
-                <Separator className="m-2" />
+              <div key={index} className="p-4 flex flex-col gap-2">
+                <h3 className="font-semibold text-lg truncate">{exp.title}</h3>
+                <p className="font-light text-muted-foreground">
+                  {exp.company}
+                </p>
+                <p className="font-light text-muted-foreground">
+                  {exp.description}
+                </p>
+                <p className="font-light text-muted-foreground">
+                  {exp.startDate} - {exp.endDate}
+                </p>
               </div>
             ))}
           </ScrollArea>
         )}
       </TabsContent>
-      <TabsContent value="projects">
+      <TabsContent value="projects" className="pt-2">
         {isPending ? (
           <SectionSkeleton />
         ) : (

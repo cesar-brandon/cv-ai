@@ -2,10 +2,11 @@
 import type { Resume, User } from "@prisma/client";
 import { ProfileHeader } from "./profile-header";
 import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
-import { useState } from "react";
-import { getLocalStorage } from "@/lib/utils";
+import { Button, buttonVariants } from "../ui/button";
 import { ProfileResume } from "./profile-resume";
+import Link from "next/link";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { Eye } from "lucide-react";
 
 export function Profile({
   user,
@@ -14,31 +15,33 @@ export function Profile({
   user: User;
   resume: Resume | null;
 }) {
-  const [resumeContent, setResumeContent] = useState<Resume | null>(
-    getLocalStorage("Resume", null),
-  );
   const router = useRouter();
   if (!resume?.content) {
     router.push("/cv-options");
   }
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   return (
-    <div className="flex flex-col gap-4">
-      <div className="w-[20rem] lg:w-[36rem] flex flex-col gap-4">
-        <ProfileHeader name={user.name} />
-        {resume?.content ? (
-          <div className="w-full h-[13rem] rounded-[3rem] bg-muted p-6 flex gap-4 overflow-hidden">
-            <p>{JSON.stringify(resume.content)}</p>
-          </div>
-        ) : (
-          <Button
-            onClick={() => router.push("/cv-options")}
-            variant="secondary"
+    <div className="w-full sm:w-[25rem] md:w-[36rem] flex flex-col gap-4">
+      <ProfileHeader name={user.name} />
+      <div className="flex items-center gap-4">
+        {resume?.url && (
+          <Link
+            className={buttonVariants({ variant: "outline" })}
+            href={resume?.url}
+            target="_blank"
           >
-            Enviar CV
-          </Button>
+            {isDesktop ? "Ver Curriculum" : <Eye className="w-5 h-5" />}
+          </Link>
         )}
+        <Button
+          className="w-full"
+          onClick={() => router.push("/cv-options")}
+          variant="secondary"
+        >
+          {resume?.content ? "Actualizar Curriculum" : "Crear Curriculum"}
+        </Button>
       </div>
-      <ProfileResume resume={resumeContent} />
+      {resume?.content && <ProfileResume resume={resume.content} />}
     </div>
   );
 }

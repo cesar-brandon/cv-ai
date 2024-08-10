@@ -32,17 +32,16 @@ const resumeSchema = z.object({
 export type Resume = z.infer<typeof resumeSchema>;
 
 export async function POST(req: Request) {
+  let tempFilePath = "";
   try {
     const formData = await req.formData();
-    console.log(formData);
     const uploadedFile = formData.values().next().value;
     let fileName = "";
     let parsedText = "";
-    console.log(uploadedFile);
 
     if (uploadedFile instanceof File) {
       fileName = uuidv4();
-      const tempFilePath = `./tmp/${fileName}.pdf`;
+      tempFilePath = `./public/${fileName}.pdf`;
       const fileBuffer = Buffer.from(await uploadedFile.arrayBuffer());
 
       // Save the buffer as a file
@@ -54,13 +53,12 @@ export async function POST(req: Request) {
       );
 
       pdfParser.on("pdfParser_dataReady", () => {
-        console.log((pdfParser as any).getRawTextContent());
         parsedText = (pdfParser as any).getRawTextContent();
       });
 
       pdfParser.loadPDF(tempFilePath);
     } else {
-      console.log("Uploaded file is not in the expected format.");
+      return new Response("No file uploaded", { status: 400 });
     }
 
     const user = await db.user.findFirst();
@@ -68,21 +66,18 @@ export async function POST(req: Request) {
 
     const { object: content } = await generateObject({
       model: google("models/gemini-1.5-pro-latest"),
-      system: `analiza la informacion del curriculum vitae en texto plano y devuelve un objeto con la informacion correcta en el formato correcto.`,
+      system: `analiza la informacion del curriculum en texto plano y devuelve un objeto en el formato correcto, con la informacion recolectada.`,
       prompt: parsedText,
       schema: resumeSchema,
     });
-
-    console.log(JSON.stringify(content));
-
-    // await db.resume.update({
-    //   where: { id: user.id },
-    //   data: { content },
-    // });
 
     return new Response(JSON.stringify(content), { status: 200 });
   } catch (error) {
     console.log(error);
     return new Response("Error", { status: 500 });
+  } finally {
+    if (tempFilePath) {
+      await fs.unlink(tempFilePath);
+    }
   }
 }

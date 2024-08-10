@@ -16,7 +16,7 @@ export function ProfileHeader({ name }: { name: string | null }) {
           <p className="text-foreground font-bold">{name}</p>
           <span className="text-muted-foreground">Illustrator</span>
         </div>
-        <div className="w-full flex flex-col lg:flex-row justify-end gap-2 p-4">
+        <div className="w-full flex flex-col sm:flex-row justify-end gap-2 p-4">
           <Badge color="primary">Graphic Design</Badge>
           <Badge variant="outline" className="border-primary">
             Illustration
